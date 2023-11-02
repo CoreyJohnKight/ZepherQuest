@@ -1,7 +1,5 @@
-#include "comms.h"
+#include "comms/comms.h"
 #include "common.h"
-
-void init_uart(void);
 
 void comms(void *pvParam)
 {
