@@ -14,10 +14,15 @@ void comms(void *pvParam)
     }
     ESP_ERROR_CHECK(ret);
 
-    printf("START AP -----------------------------------------\n");
-    vTaskDelay(200 / portTICK_PERIOD_MS);
-    ESP_LOGI(TAG_AP, "ESP_WIFI_MODE_AP");
-    wifi_init_softap();
+    // printf("START AP -----------------------------------------\n");
+    // vTaskDelay(200 / portTICK_PERIOD_MS);
+    // ESP_LOGI(TAG_AP, "ESP_WIFI_MODE_AP");
+    // wifi_init_softap();
+
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    printf("START STA -----------------------------------------\n");
+    ESP_LOGI(TAG_STA, "ESP_WIFI_MODE_STA");
+    wifi_init_sta();
 
     while (1)
     {
