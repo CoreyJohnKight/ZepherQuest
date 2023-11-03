@@ -1,5 +1,5 @@
 #include "comms/comms.h"
-#include "common.h"
+#include "comms/comms_common.h"
 #include "comms/soft_ap.h"
 #include "comms/server.h"
 
