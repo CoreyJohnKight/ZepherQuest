@@ -79,10 +79,10 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Custom-Header-1", "Custom-Value-1");
     httpd_resp_set_hdr(req, "Custom-Header-2", "Custom-Value-2");
 
+    ESP_LOGI(TAG_SERVER, "Waiting for reading to complete");
+
     // Give the semaphore to signal the reader
     xSemaphoreGive(xReadingCompleteSemaphore);
-
-    ESP_LOGI(TAG_SERVER, "Waiting for reading to complete");
 
     if (xSemaphoreTake(xReadingCompleteSemaphore, config_SERVER_RESPOND_TIMEOUT / portTICK_PERIOD_MS) == pdTRUE)
     {
