@@ -6,4 +6,8 @@
 #include "driver/gpio.h"
 #include "rtos_config.h"
 
+// Globals
+//=================================
+extern volatile uint16_t dataValue;
+
 #endif
