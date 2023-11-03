@@ -1,7 +1,13 @@
 #include "comms/soft_ap.h"
 
-static void wifi_event_handler(void *arg, esp_event_base_t event_base,
-                               int32_t event_id, void *event_data)
+// Current reconnect count - STA
+static int s_retry_num = 0;
+// Log tags
+static const char *TAG_AP = "wifi softAP";
+static const char *TAG_STA = "wifi station";
+
+void wifi_event_handler(void *arg, esp_event_base_t event_base,
+                        int32_t event_id, void *event_data)
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED)
     {

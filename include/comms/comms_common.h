@@ -10,6 +10,7 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "esp_http_server.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -41,13 +42,6 @@
 #define WIFI_FAIL_BIT BIT1
 
 /* FreeRTOS event group to signal when we are connected*/
-static EventGroupHandle_t s_wifi_event_group;
-
-// Log tags
-static const char *TAG_AP = "wifi softAP";
-static const char *TAG_STA = "wifi station";
-
-// Current reconnect count - STA
-static int s_retry_num = 0;
+EventGroupHandle_t s_wifi_event_group;
 
 #endif
