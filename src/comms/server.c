@@ -1,6 +1,8 @@
 #include "comms/server.h"
+#include "io/read.h"
 
 static const char *TAG_SERVER = "http server";
+extern TaskHandle_t xReadTask_handle;
 
 /* An HTTP GET handler */
 static esp_err_t hello_get_handler(httpd_req_t *req)
@@ -74,6 +76,9 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Custom-Header-1", "Custom-Value-1");
     httpd_resp_set_hdr(req, "Custom-Header-2", "Custom-Value-2");
 
+    // Wake up the reader
+    xTaskNotifyGive(xReadTask_handle);
+
     /* Send response with custom headers and body set as the
      * string passed in user context*/
     const char *resp_str = (const char *)req->user_ctx;
@@ -107,12 +112,10 @@ start_webserver(void)
 
     ESP_LOGI(TAG_SERVER, "Starting server on port: '%d'", config.server_port);
 
+    // Register the requests
     if (httpd_start(&server, &config) == ESP_OK)
     {
         httpd_register_uri_handler(server, &hello);
-        // httpd_register_uri_handler(server, &echo);
-        // httpd_register_uri_handler(server, &ctrl);
-
         return server;
     }
 

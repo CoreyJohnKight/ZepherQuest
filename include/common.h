@@ -6,7 +6,11 @@
 #include "driver/gpio.h"
 #include "rtos_config.h"
 
-// Globals
+// Global Tasks
+//=================================
+extern TaskHandle_t xReadTask_handle;
+
+// Globals Values
 //=================================
 extern volatile uint16_t dataValue;
 
