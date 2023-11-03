@@ -1,18 +1,30 @@
 #include "io/read.h"
 
 extern volatile u_int16_t dataValue;
+extern SemaphoreHandle_t xReadingCompleteSemaphore;
+
+static const char *TAG_READER = "data reader";
 
 void io_read_task(void *vParam)
 {
     while (1)
     {
-        // Sleep until woken
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        ESP_LOGI(TAG_READER, "Going to sleep.");
+        // Wait for the semaphore to be given (unblocked by /hello request)
+        if (xSemaphoreTake(xReadingCompleteSemaphore, portMAX_DELAY) == pdTRUE)
+        {
+            // I have awoken!
+            ESP_LOGI(TAG_READER, "Reading data...");
+            dataValue++;
 
-        // I have awoken!
-        printf("CORE: Reading data...\n");
-        dataValue++;
+            // Done reading, give the semaphore back to signal completion
+            xSemaphoreGive(xReadingCompleteSemaphore);
 
-        printf("CORE: Done! Going to sleep.\n");
+            ESP_LOGI(TAG_READER, "Done!");
+        }
+        else
+        {
+            ESP_LOGI(TAG_READER, "Error waiting to be woken by server.");
+        }
     }
 }

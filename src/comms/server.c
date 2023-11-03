@@ -3,6 +3,7 @@
 
 static const char *TAG_SERVER = "http server";
 extern TaskHandle_t xReadTask_handle;
+extern SemaphoreHandle_t xReadingCompleteSemaphore;
 
 /* A function to handle common request processing for all endpoints */
 static void common_request_handler(httpd_req_t *req)
@@ -77,23 +78,34 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Custom-Header-1", "Custom-Value-1");
     httpd_resp_set_hdr(req, "Custom-Header-2", "Custom-Value-2");
 
-    // Wake up the reader
-    xTaskNotifyGive(xReadTask_handle);
+    // Give the semaphore to signal the reader
+    xSemaphoreGive(xReadingCompleteSemaphore);
 
-    ESP_LOGI(TAG_SERVER, "Responding to HELLO");
+    ESP_LOGI(TAG_SERVER, "Waiting for reading to complete");
 
-    /* Send response with custom headers and body set as the
-     * string passed in user context*/
-    const char *resp_str = (const char *)req->user_ctx;
-    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
-
-    /* After sending the HTTP response the old HTTP request
-     * headers are lost. Check if HTTP request headers can be read now. */
-    if (httpd_req_get_hdr_value_len(req, "Host") == 0)
+    if (xSemaphoreTake(xReadingCompleteSemaphore, config_SERVER_RESPOND_TIMEOUT / portTICK_PERIOD_MS) == pdTRUE)
     {
-        ESP_LOGI(TAG_SERVER, "Request headers lost");
+        ESP_LOGI(TAG_SERVER, "Responding to HELLO");
+
+        /* Send response with custom headers and body set as the
+         * string passed in user context*/
+        const char *resp_str = (const char *)req->user_ctx;
+        httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
+
+        /* After sending the HTTP response the old HTTP request
+         * headers are lost. Check if HTTP request headers can be read now. */
+        if (httpd_req_get_hdr_value_len(req, "Host") == 0)
+        {
+            ESP_LOGI(TAG_SERVER, "Request headers lost");
+        }
+        return ESP_OK;
     }
-    return ESP_OK;
+    else
+    {
+        ESP_LOGI(TAG_SERVER, "Timeout waiting for response from reader");
+
+        return ESP_FAIL;
+    }
 }
 
 static const httpd_uri_t hello =
