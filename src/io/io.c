@@ -1,7 +1,11 @@
 #include "io/io.h"
-#include "common.h"
+
+#include "io/read.h"
+
 void io(void *pvParam)
 {
+    xTaskCreatePinnedToCore(&io_read_task, "Reading Task", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 1, NULL, MY_CORE);
+
     gpio_pad_select_gpio(GPIO_NUM_2);
     gpio_set_direction(GPIO_NUM_2, GPIO_MODE_OUTPUT);
 
