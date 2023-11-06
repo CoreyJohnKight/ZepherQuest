@@ -32,3 +32,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contributors
 - Corey Knight
+
+### Acknowledgments
+This project contains some sections of code that was based off of examples from the Espressif IoT Development Framework (ESP-IDF). 
+I would like to express gratitude to the Espressif team for their contributions to the open-source community.
