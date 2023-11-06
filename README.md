@@ -24,7 +24,7 @@
 ## Software
 - [PlatformIO](https://platformio.org/).
 - [EspIdf 4.4.1](https://github.com/espressif/esp-idf/tree/release/v4.4)
-- [FreeRTOS library](https://github.com/FreeRTOS/FreeRTOS) (included in ESP32 Arduino Core).
+- [FreeRTOS library](https://github.com/FreeRTOS/FreeRTOS)
 
 ## License
 
