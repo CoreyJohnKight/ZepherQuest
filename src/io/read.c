@@ -5,6 +5,14 @@ extern SemaphoreHandle_t xReadingCompleteSemaphore;
 
 static const char *TAG_READER = "data reader";
 
+/* Reading from the field sensors.
+ * This task gets woken by the HTTP server when a GET request is made.
+ * It should update the global values, then pass back the semaphore.
+ *
+ * TODO: STUB
+ * For now it is only updating a counter with each read.
+ * Once the sensor hardware is configured, this should read from the sensors.
+ */
 void io_read_task(void *vParam)
 {
     while (1)

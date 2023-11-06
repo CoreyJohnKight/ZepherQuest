@@ -6,6 +6,8 @@ static int s_retry_num = 0;
 static const char *TAG_AP = "wifi softAP";
 static const char *TAG_STA = "wifi station";
 
+/* Generic WIFI event handler, for use with AP and Station mode
+ */
 void wifi_event_handler(void *arg, esp_event_base_t event_base,
                         int32_t event_id, void *event_data)
 {
@@ -48,6 +50,9 @@ void wifi_event_handler(void *arg, esp_event_base_t event_base,
     }
 }
 
+/* Initialize wifi in soft AP mode.
+   TODO: For futre use
+ */
 void wifi_init_softap(void)
 {
     ESP_ERROR_CHECK(esp_netif_init());
@@ -85,6 +90,8 @@ void wifi_init_softap(void)
              ESP_WIFI_AP_SSID, ESP_WIFI_AP_PASS, ESP_WIFI_AP_CHANNEL);
 }
 
+/* Start the wifi module in station mode.
+ */
 void wifi_init_sta(void)
 {
     s_wifi_event_group = xEventGroupCreate();

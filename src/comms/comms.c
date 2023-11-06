@@ -3,6 +3,11 @@
 #include "comms/soft_ap.h"
 #include "comms/server.h"
 
+static const char *TAG_COMMS = "Comms Main";
+
+/* This is the main task pinned to the Comms core. All communications based
+ * tasks are generated from here, and this acts as the cores own main().
+ */
 void comms(void *pvParam)
 {
     static httpd_handle_t server = NULL;
@@ -16,22 +21,21 @@ void comms(void *pvParam)
     }
     ESP_ERROR_CHECK(ret);
 
-    // printf("START AP -----------------------------------------\n");
-    // vTaskDelay(200 / portTICK_PERIOD_MS);
-    // wifi_init_softap();
+    // TODO: For future use.
+    //  wifi_init_softap();
 
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    printf("START STA -----------------------------------------\n");
+    ESP_LOGI(TAG_COMMS, "START STA -----------------------------------------");
     wifi_init_sta();
 
-    printf("\n\nStarting Server...\n");
+    ESP_LOGI(TAG_COMMS, "Starting Server...");
     server = start_webserver();
     if (server == NULL)
     {
-        printf("ERROR\n");
+        ESP_LOGI(TAG_COMMS, "SERVER WAS NULL");
         return;
     }
 
+    // TODO:
     while (1)
     {
         vTaskDelay(50 / portTICK_PERIOD_MS);

@@ -12,7 +12,8 @@ static void common_request_handler(httpd_req_t *req)
     char *buf;
     size_t buf_len;
 
-    /* Get and process headers */
+    /* Get and process headers.
+    Currentley displaying HOST, more options available for future use. */
     const char *header_names[] = {"Host", "Test-Header-2", "Test-Header-1"};
     for (int i = 0; i < sizeof(header_names) / sizeof(header_names[0]); i++)
     {
@@ -28,7 +29,8 @@ static void common_request_handler(httpd_req_t *req)
         }
     }
 
-    /* Process URL queries */
+    /* Process URL queries.
+    TODO: For future use. */
     buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1)
     {
@@ -50,7 +52,8 @@ static void common_request_handler(httpd_req_t *req)
     }
 }
 
-/* An HTTP GET handler for the /favicon.ico request */
+/* An HTTP GET handler for the /favicon.ico request.
+Respond null so that no error is generated. */
 static esp_err_t favicon_get_handler(httpd_req_t *req)
 {
     common_request_handler(req);
@@ -62,20 +65,15 @@ static esp_err_t favicon_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-/* Register the /favicon.ico request handler */
-static const httpd_uri_t favicon =
-    {
-        .uri = "/favicon.ico",
-        .method = HTTP_GET,
-        .handler = favicon_get_handler,
-        .user_ctx = NULL};
-
-/* An HTTP GET handler */
+/* HTTP GET handler for /hello
+Wakes up the reader, waits for read to complete, then responds with the data*/
 static esp_err_t hello_get_handler(httpd_req_t *req)
 {
+    // Apply common handling
     common_request_handler(req);
 
-    /* Set some custom headers */
+    // Set some custom headers
+    // TODO: Future use
     httpd_resp_set_hdr(req, "Custom-Header-1", "Custom-Value-1");
     httpd_resp_set_hdr(req, "Custom-Header-2", "Custom-Value-2");
 
@@ -88,7 +86,6 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
     {
         ESP_LOGI(TAG_SERVER, "Responding to HELLO");
 
-        // Convert to str and append to msg
         // Convert dataValue to a string
         char strDataValue[16]; // Assuming a maximum of 16 characters for the integer value
         snprintf(strDataValue, sizeof(strDataValue), "%d", dataValue);
@@ -97,12 +94,12 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
         char updatedRespStr[256]; // Adjust the buffer size as needed
         snprintf(updatedRespStr, sizeof(updatedRespStr), "%s DataValue: %s", (const char *)req->user_ctx, strDataValue);
 
-        /* Send response with custom headers and body set as the
-         * string passed in user context*/
+        // Send response with custom headers and body set as the
+        // string passed in user context
         httpd_resp_send(req, updatedRespStr, HTTPD_RESP_USE_STRLEN);
 
-        /* After sending the HTTP response the old HTTP request
-         * headers are lost. Check if HTTP request headers can be read now. */
+        // After sending the HTTP response the old HTTP request
+        // headers are lost. Check if HTTP request headers can be read now.
         if (httpd_req_get_hdr_value_len(req, "Host") == 0)
         {
             ESP_LOGI(TAG_SERVER, "Request headers lost");
@@ -111,12 +108,24 @@ static esp_err_t hello_get_handler(httpd_req_t *req)
     }
     else
     {
+        // Timeout
         ESP_LOGI(TAG_SERVER, "Timeout waiting for response from reader");
 
         return ESP_FAIL;
     }
 }
 
+//-------------------------------------------------------------------
+
+/* Register the /favicon.ico request handler */
+static const httpd_uri_t favicon =
+    {
+        .uri = "/favicon.ico",
+        .method = HTTP_GET,
+        .handler = favicon_get_handler,
+        .user_ctx = NULL};
+
+/* Register the /hello request handler */
 static const httpd_uri_t hello =
     {
         .uri = "/hello",
@@ -125,8 +134,7 @@ static const httpd_uri_t hello =
         .user_ctx = "Hello, this is the esp32 speaking.",
 };
 
-//-------------------------------------------------------------------
-
+// Start the HTTP server
 httpd_handle_t
 start_webserver(void)
 {
