@@ -1,4 +1,7 @@
 ﻿@page "/counter"
+@using BlazorApp.Client.services
+
+@inject EspApiService EspApiService 
 
 <PageTitle>Counter</PageTitle>
 
@@ -8,8 +11,17 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<h2>Data read from ESP</h2>
+<p>Current Value: @retrievedValue</p>
+
 @code {
     private int currentCount = 0;
+    private int retrievedValue = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentCount = await EspApiService.GetHelloIntFromEspAsync();
+    }
 
     private void IncrementCount()
     {
