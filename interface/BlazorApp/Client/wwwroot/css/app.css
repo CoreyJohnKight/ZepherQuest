@@ -62,3 +62,27 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+/* NavMenu container */
+.nav-menu-container {
+    flex: 1; /* Allow the NavMenu to take up available space */
+}
+
+/* Container for the bottom image */
+.bottom-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+/* Define a CSS class to style the image */
+.bottom-image {
+    max-width: 100%; /* Ensure the image doesn't exceed its container's width */
+    height: auto; /* Maintain the image's aspect ratio */
+    padding: 10px; /* Add padding to create a box-like appearance */
+    border: 5px solid #dfdfdfc0; /* Add a border for the box */
+    border-radius: 20px; /* Add rounded corners */
+    background: radial-gradient(circle at center, #f6d2fe, #3b0253); /* Define a radial gradient */
+}
